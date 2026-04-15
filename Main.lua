@@ -4,21 +4,27 @@ task.wait(5) -- Safety delay to ensure NPCs and Ships are spawned
 
 local BaseURL = "https://raw.githubusercontent.com/ewfuweofhweoui/Fallen/main/" 
 
+-- Clear stale test hooks for a clean start
+if getgenv().VoyagerLocalLoad and not _G.VoyagerLocalForce then
+    getgenv().VoyagerLocalLoad = nil
+end
+
 local function load(path)
     if getgenv().VoyagerLocalLoad then
         return getgenv().VoyagerLocalLoad(path)
     end
     local success, content = pcall(game.HttpGet, game, BaseURL .. path)
     if not success or not content or content == "" or content:find("404") then 
-        warn("Voyagers: Failed to load " .. path) 
-        return function() end -- Return empty function to prevent crash
+        warn("Voyagers: Failed to load " .. path .. " | Check your GitHub repository!") 
+        return {} 
     end
     local func, err = loadstring(content)
     if not func then
         warn("Voyagers: Syntax error in " .. path .. " | " .. tostring(err))
-        return function() end
+        return {}
     end
-    return func()
+    local result = func()
+    return (type(result) == "table" and result) or {}
 end
 
 -- [[ Shared Data ]]
@@ -57,10 +63,10 @@ local ShipTab = Window:CreateTab("Ship", nil)
 local FOVCircle = Drawing.new("Circle")
 FOVCircle.Thickness = 1
 FOVCircle.NumSides = 64
-FOVCircle.Radius = Settings.FOVSize
+FOVCircle.Radius = Settings.FOVSize or 100
 FOVCircle.Filled = false
 FOVCircle.Transparency = 1
-FOVCircle.Color = Settings.FOVColor
+FOVCircle.Color = Settings.FOVColor or Color3.fromRGB(255, 255, 255)
 FOVCircle.Visible = false
 
 local CannonAimCircle = Drawing.new("Circle")
