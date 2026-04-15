@@ -43,15 +43,21 @@ return function(ShipTab, Settings, Utils, ShipVisuals, SHIP_TYPES)
 
     -- Logic Loop
     RunService.RenderStepped:Connect(function()
-        -- Ship Speed (Physics-based for vehicles)
+        -- Ship Speed
         if Settings.ShipSpeed and UserInputService:IsKeyDown(Enum.KeyCode.F) then
             local ship = Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
             if ship then
-                local rootPart = ship.PrimaryPart or ship:FindFirstChild("MainHull") or ship:FindFirstChild("Hull") or ship:FindFirstChildWhichIsA("BasePart")
-                if rootPart then
-                    local moveDir = rootPart.CFrame.LookVector
-                    rootPart.AssemblyLinearVelocity = rootPart.AssemblyLinearVelocity + (moveDir * (Settings.ShipMultiplier * 0.15))
-                end
+                local pivot = ship:GetPivot()
+                local movePart = ship:FindFirstChild("MainHull") or ship:FindFirstChild("Hull") or ship.PrimaryPart or ship:FindFirstChildWhichIsA("BasePart")
+                local moveDir = movePart and movePart.CFrame.LookVector or pivot.LookVector
+                
+                -- [[ Diagnostic ]]
+                warn("Voyager: Boosting ship " .. ship.Name .. " at multiplier " .. tostring(Settings.ShipMultiplier))
+                
+                ship:PivotTo(pivot + (moveDir * (Settings.ShipMultiplier * 0.5)))
+            else
+                -- [[ Diagnostic ]]
+                warn("Voyager: Ship Speed active but no ship found under player.")
             end
         end
 

@@ -4,18 +4,18 @@ local LocalPlayer = Players.LocalPlayer
 local Utils = {}
 
 function Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
-    local char = LocalPlayer.Character
+    local player = game:GetService("Players").LocalPlayer
+    local char = player and player.Character
     if not char then return nil end
     local hum = char:FindFirstChildOfClass("Humanoid")
     
     local function isShip(model)
         if not model or not model:IsA("Model") then return false end
         if ShipVisuals[model] or model:FindFirstChild("MainHull") or model:FindFirstChild("Hull") or model:FindFirstChildWhichIsA("VehicleSeat") then return true end
+        
         local name = model.Name:lower()
-        local shipKeywords = {"ship", "boat", "hull", "sloop", "brig", "galleon", "brigantine", "frigate", "raft"}
-        for _, keyword in ipairs(shipKeywords) do
-            if name:find(keyword) then return true end
-        end
+        if name:find("ship") or name:find("boat") or name:find("hull") or name:find("sloop") or name:find("brig") then return true end
+        
         for sName, _ in pairs(SHIP_TYPES) do
             if name:find(sName:lower()) then return true end
         end
@@ -38,7 +38,7 @@ function Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
         current = current.Parent
     end
 
-    -- Strategy 3: Raycast down (if standing on it but not parented)
+    -- Strategy 3: Raycast down (Fallback for unparented standing)
     local root = char:FindFirstChild("HumanoidRootPart")
     if root then
         local params = RaycastParams.new()

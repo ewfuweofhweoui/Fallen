@@ -5,6 +5,9 @@ task.wait(5) -- Safety delay to ensure NPCs and Ships are spawned
 local BaseURL = "https://raw.githubusercontent.com/ewfuweofhweoui/Fallen/main/" 
 
 local function load(path)
+    if getgenv().VoyagerLocalLoad then
+        return getgenv().VoyagerLocalLoad(path)
+    end
     local success, content = pcall(game.HttpGet, game, BaseURL .. path)
     if not success or not content or content == "" or content:find("404") then 
         warn("Voyagers: Failed to load " .. path) 
