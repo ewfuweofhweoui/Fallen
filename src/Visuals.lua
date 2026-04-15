@@ -104,6 +104,7 @@ return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, S
         for _, name in pairs(Settings.KnownNPCs) do if name == model.Name then isKnown = true break end end
         if not isKnown then 
             table.insert(Settings.KnownNPCs, model.Name)
+            Settings.NPCFilters[model.Name] = true -- ENABLE BY DEFAULT
             pcall(function() NPCDropdown:Set(Settings.KnownNPCs) end)
         end
 

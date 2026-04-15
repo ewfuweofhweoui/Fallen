@@ -46,9 +46,10 @@ return function(ShipTab, Settings, Utils, ShipVisuals, SHIP_TYPES)
         -- Ship Speed
         if Settings.ShipSpeed and UserInputService:IsKeyDown(Enum.KeyCode.F) then
             local ship = Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
-            if ship and ship.PrimaryPart then
-                local moveDir = ship.PrimaryPart.CFrame.LookVector
-                ship:PivotTo(ship:GetPivot() + (moveDir * (Settings.ShipMultiplier * 0.5)))
+            if ship then
+                local pivot = ship:GetPivot()
+                local moveDir = pivot.LookVector
+                ship:PivotTo(pivot + (moveDir * (Settings.ShipMultiplier * 0.5)))
             end
         end
 
