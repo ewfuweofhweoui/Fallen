@@ -1,5 +1,5 @@
 -- [[ Voyagers | Modular Main ]]
-local BaseURL = "https://raw.githubusercontent.com/thaim/Fallen/main/" -- IMPORTANT: User needs to update this to their own repo URL
+local BaseURL = "https://raw.githubusercontent.com/ewfuweofhweoui/Fallen/main/" 
 
 local function load(path)
     local success, content = pcall(game.HttpGet, game, BaseURL .. path)
