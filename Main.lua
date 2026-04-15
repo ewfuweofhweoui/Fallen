@@ -1,4 +1,7 @@
 -- [[ Voyagers | Modular Main ]]
+if not game:IsLoaded() then game.Loaded:Wait() end
+task.wait(5) -- Safety delay to ensure NPCs and Ships are spawned
+
 local BaseURL = "https://raw.githubusercontent.com/ewfuweofhweoui/Fallen/main/" 
 
 local function load(path)
