@@ -9,22 +9,33 @@ if getgenv().VoyagerLocalLoad and not _G.VoyagerLocalForce then
     getgenv().VoyagerLocalLoad = nil
 end
 
+-- Super Noop object: Can be called or indexed infinitely without crashing
+local SuperNoop = setmetatable({}, {
+    __call = function(self) return self end,
+    __index = function(self) return self end
+})
+
 local function load(path)
     if getgenv().VoyagerLocalLoad then
-        return getgenv().VoyagerLocalLoad(path)
+        local res = getgenv().VoyagerLocalLoad(path)
+        return res or SuperNoop
     end
     local success, content = pcall(game.HttpGet, game, BaseURL .. path)
     if not success or not content or content == "" or content:find("404") then 
-        warn("Voyagers: Failed to load " .. path .. " | Check your GitHub repository!") 
-        return {} 
+        warn("Voyagers: Missing module -> " .. path) 
+        return SuperNoop
     end
     local func, err = loadstring(content)
     if not func then
         warn("Voyagers: Syntax error in " .. path .. " | " .. tostring(err))
-        return {}
+        return SuperNoop
     end
-    local result = func()
-    return (type(result) == "table" and result) or {}
+    local status, result = pcall(func)
+    if not status then
+        warn("Voyagers: Runtime error in " .. path .. " | " .. tostring(result))
+        return SuperNoop
+    end
+    return result or SuperNoop
 end
 
 -- [[ Shared Data ]]
