@@ -3,8 +3,16 @@ local BaseURL = "https://raw.githubusercontent.com/ewfuweofhweoui/Fallen/main/"
 
 local function load(path)
     local success, content = pcall(game.HttpGet, game, BaseURL .. path)
-    if not success then warn("Voyagers: Failed to load " .. path) return nil end
-    return loadstring(content)()
+    if not success or not content or content == "" or content:find("404") then 
+        warn("Voyagers: Failed to load " .. path) 
+        return function() end -- Return empty function to prevent crash
+    end
+    local func, err = loadstring(content)
+    if not func then
+        warn("Voyagers: Syntax error in " .. path .. " | " .. tostring(err))
+        return function() end
+    end
+    return func()
 end
 
 -- [[ Shared Data ]]
