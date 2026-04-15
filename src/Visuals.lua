@@ -25,8 +25,27 @@ return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, S
     VisualsTab:CreateColorPicker({Name = "ESP Text Color", Color = Settings.ESPColor, Callback = function(v) Settings.ESPColor = v end})
     
     VisualsTab:CreateSection("NPC ESP")
-    VisualsTab:CreateToggle({Name = "Enable NPC ESP", CurrentValue = false, Callback = function(v) Settings.NPCESP = v end})
+    VisualsTab:CreateToggle({Name = "Enable Global NPC ESP", CurrentValue = false, Callback = function(v) Settings.NPCESP = v end})
     VisualsTab:CreateColorPicker({Name = "NPC ESP Color", Color = Settings.NPCColor, Callback = function(v) Settings.NPCColor = v end})
+
+    local SelectedNPC = "None"
+    local NPCDropdown = VisualsTab:CreateDropdown({
+        Name = "Select NPC Type",
+        Options = Settings.KnownNPCs,
+        CurrentValue = "None",
+        MultipleOptions = false,
+        Callback = function(v) SelectedNPC = v end,
+    })
+
+    VisualsTab:CreateToggle({
+        Name = "Show Selected NPC",
+        CurrentValue = false,
+        Callback = function(v)
+            if SelectedNPC ~= "None" then
+                Settings.NPCFilters[SelectedNPC] = v
+            end
+        end
+    })
 
     -- [[ Handlers ]]
     local function ApplyPlayerVisuals(player)
@@ -79,6 +98,14 @@ return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, S
         if not model or NPCVisuals[model] then return end
         local head = model:FindFirstChild("Head") or model:FindFirstChild("Eye") or model:FindFirstChildWhichIsA("BasePart")
         if not head then return end
+
+        -- Auto-add to KnownNPCs if new
+        local isKnown = false
+        for _, name in pairs(Settings.KnownNPCs) do if name == model.Name then isKnown = true break end end
+        if not isKnown then 
+            table.insert(Settings.KnownNPCs, model.Name)
+            pcall(function() NPCDropdown:Set(Settings.KnownNPCs) end)
+        end
 
         local billboard = Instance.new("BillboardGui", model)
         billboard.Name = "VoyagerNPCESP"
@@ -152,7 +179,8 @@ return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, S
 
         -- NPC ESP Update
         for model, label in pairs(NPCVisuals) do
-            if model.Parent and Settings.NPCESP then
+            local isFiltered = Settings.NPCFilters[model.Name] == true
+            if model.Parent and Settings.NPCESP and isFiltered then
                 if model:FindFirstChild("Humanoid") and model.Humanoid.Health <= 0 then
                     label.Visible = false
                 else
@@ -168,6 +196,13 @@ return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, S
     -- Inits
     for _, player in pairs(Players:GetPlayers()) do ApplyPlayerVisuals(player) end
     Players.PlayerAdded:Connect(ApplyPlayerVisuals)
+
+    -- Initial NPC Scan
+    for _, model in pairs(workspace:GetDescendants()) do
+        if model:IsA("Model") and model:FindFirstChildOfClass("Humanoid") and not Players:GetPlayerFromCharacter(model) then
+            ApplyNPCVisuals(model)
+        end
+    end
 
     workspace.DescendantAdded:Connect(function(model)
         if model:IsA("Model") and model:FindFirstChildOfClass("Humanoid") and not Players:GetPlayerFromCharacter(model) then

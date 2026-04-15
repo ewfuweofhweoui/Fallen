@@ -8,13 +8,20 @@ function Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
     if not char then return nil end
     local hum = char:FindFirstChildOfClass("Humanoid")
     
+    local function isShip(model)
+        if not model or not model:IsA("Model") then return false end
+        if ShipVisuals[model] or model:FindFirstChild("MainHull") then return true end
+        for name, _ in pairs(SHIP_TYPES) do
+            if model.Name:find(name) then return true end
+        end
+        return false
+    end
+
     -- Strategy 1: If in a seat, find the seat's model
     if hum and hum.SeatPart then
         local current = hum.SeatPart
         while current and current ~= workspace do
-            if ShipVisuals[current] or SHIP_TYPES[current.Name] or current:FindFirstChild("MainHull") then
-                return current
-            end
+            if isShip(current) then return current end
             current = current.Parent
         end
     end
@@ -22,9 +29,7 @@ function Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
     -- Strategy 2: If standing on the ship, look up from the char
     local current = char.Parent
     while current and current ~= workspace do
-        if ShipVisuals[current] or SHIP_TYPES[current.Name] or current:FindFirstChild("MainHull") then
-            return current
-        end
+        if isShip(current) then return current end
         current = current.Parent
     end
 
