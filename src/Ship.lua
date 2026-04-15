@@ -48,7 +48,9 @@ return function(ShipTab, Settings, Utils, ShipVisuals, SHIP_TYPES)
             local ship = Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
             if ship then
                 local pivot = ship:GetPivot()
-                local moveDir = pivot.LookVector
+                local forwardPart = ship:FindFirstChild("MainHull") or ship:FindFirstChild("Hull") or ship.PrimaryPart or ship:FindFirstChildWhichIsA("BasePart")
+                local moveDir = forwardPart and forwardPart.CFrame.LookVector or pivot.LookVector
+                
                 ship:PivotTo(pivot + (moveDir * (Settings.ShipMultiplier * 0.5)))
             end
         end

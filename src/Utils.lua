@@ -12,7 +12,10 @@ function Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
         if not model or not model:IsA("Model") then return false end
         if ShipVisuals[model] or model:FindFirstChild("MainHull") or model:FindFirstChild("Hull") then return true end
         local name = model.Name:lower()
-        if name:find("ship") or name:find("boat") or name:find("hull") or name:find("sloop") or name:find("brig") then return true end
+        local shipKeywords = {"ship", "boat", "hull", "sloop", "brig", "galleon", "brigantine", "frigate", "raft"}
+        for _, keyword in ipairs(shipKeywords) do
+            if name:find(keyword) then return true end
+        end
         for sName, _ in pairs(SHIP_TYPES) do
             if name:find(sName:lower()) then return true end
         end
@@ -33,6 +36,22 @@ function Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
     while current and current ~= workspace do
         if isShip(current) then return current end
         current = current.Parent
+    end
+
+    -- Strategy 3: Raycast down (if standing on it but not parented)
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if root then
+        local params = RaycastParams.new()
+        params.FilterDescendantsInstances = {char}
+        params.FilterType = Enum.RaycastFilterType.Exclude
+        local result = workspace:Raycast(root.Position, Vector3.new(0, -20, 0), params)
+        if result and result.Instance then
+            local p = result.Instance
+            while p and p ~= workspace do
+                if isShip(p) then return p end
+                p = p.Parent
+            end
+        end
     end
 
     return nil
