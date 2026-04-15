@@ -7,6 +7,8 @@ return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES,
     CombatTab:CreateSection("Player Targeting")
     CombatTab:CreateToggle({Name = "Enable Player Aimbot", CurrentValue = false, Callback = function(v) Settings.Aimbot = v end})
     CombatTab:CreateToggle({Name = "Enable NPC Aimbot", CurrentValue = false, Callback = function(v) Settings.NPCAimbot = v end})
+    CombatTab:CreateToggle({Name = "Enable Silent Aim", CurrentValue = false, Callback = function(v) Settings.SilentAim = v end})
+    CombatTab:CreateToggle({Name = "Silent Ballistics (Lead/Drop)", CurrentValue = true, Callback = function(v) Settings.SilentBallistics = v end})
 
     CombatTab:CreateSection("Cannon Targeting")
     CombatTab:CreateToggle({Name = "Enable Cannon Helper", CurrentValue = false, Callback = function(v) Settings.CannonAim = v end})
@@ -75,17 +77,52 @@ return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES,
         end
     end)
 
-    -- Metatable Hook (Shared/Global ideally, but we'll use a global to catch it)
+    -- Metatable Hook for Silent Aim and Remote Discovery
     local canHook = (getrawmetatable and setreadonly and newcclosure)
     if canHook then
         local mt = getrawmetatable(game)
         local oldNamecall = mt.__namecall
         setreadonly(mt, false)
+        
         mt.__namecall = newcclosure(function(self, ...)
             local method = getnamecallmethod()
+            local args = {...}
+
+            -- Remote Discovery (for Instakill)
             if method == "FireServer" and (tostring(self):lower():find("hit") or tostring(self):lower():find("damage") or tostring(self):lower():find("combat")) then
                 _G.LastCombatRemote = self
             end
+
+            -- Silent Aim Logic (Raycast Redirection with Ballistics)
+            if Settings.SilentAim and not checkcaller() then
+                local targetPart = Utils.GetClosestTarget(Settings, NPCVisuals)
+                if targetPart then
+                    local aimPos = targetPart.Position
+                    
+                    if Settings.SilentBallistics then
+                        local origin = (method == "Raycast" and args[1]) or (method:find("Ray") and args[1] and args[1].Origin) or workspace.CurrentCamera.CFrame.Position
+                        local targetVel = targetPart.AssemblyLinearVelocity or Vector3.new(0, 0, 0)
+                        local dist = (aimPos - origin).Magnitude
+                        local timeToHit = dist / Settings.CannonSpeed
+                        
+                        -- Lead and Drop Compensation (No Spread included by overwriting direction)
+                        local leadPos = aimPos + (targetVel * timeToHit)
+                        local dropOffset = 0.5 * Settings.CannonGravity * (timeToHit ^ 2)
+                        aimPos = leadPos + Vector3.new(0, dropOffset, 0)
+                    end
+
+                    if method == "Raycast" then
+                        local origin, direction = args[1], args[2]
+                        local redirectedDirection = (aimPos - origin).Unit * direction.Magnitude
+                        return oldNamecall(self, origin, redirectedDirection, select(3, ...))
+                    elseif method:find("FindPartOnRay") then
+                        local oldRay = args[1]
+                        local redirectedRay = Ray.new(oldRay.Origin, (aimPos - oldRay.Origin).Unit * oldRay.Direction.Magnitude)
+                        return oldNamecall(self, redirectedRay, select(2, ...))
+                    end
+                end
+            end
+
             return oldNamecall(self, ...)
         end)
         setreadonly(mt, true)

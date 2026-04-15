@@ -21,6 +21,8 @@ local Settings = {
     -- Combat Settings
     Fullbright = false,
     Aimbot = false,
+    SilentAim = false,
+    SilentBallistics = true,
     CannonAim = false,
     CannonSpeed = 150,
     CannonGravity = 196,
