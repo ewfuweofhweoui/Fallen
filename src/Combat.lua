@@ -10,10 +10,10 @@ return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES,
     CombatTab:CreateToggle({Name = "Enable Silent Aim", CurrentValue = false, Callback = function(v) Settings.SilentAim = v end})
     CombatTab:CreateToggle({Name = "Silent Ballistics (Lead/Drop)", CurrentValue = true, Callback = function(v) Settings.SilentBallistics = v end})
 
-    CombatTab:CreateSection("Cannon Targeting")
+    CombatTab:CreateSection("Ballistic Settings (Flintlocks & Cannons)")
     CombatTab:CreateToggle({Name = "Enable Cannon Helper", CurrentValue = false, Callback = function(v) Settings.CannonAim = v end})
-    CombatTab:CreateSlider({Name = "Launch Speed", Range = {50, 1000}, Increment = 5, CurrentValue = 150, Callback = function(v) Settings.CannonSpeed = v end})
-    CombatTab:CreateSlider({Name = "Cannon Gravity", Range = {0, 500}, Increment = 5, CurrentValue = 196, Callback = function(v) Settings.CannonGravity = v end})
+    CombatTab:CreateSlider({Name = "Projectile Speed", Range = {50, 1000}, Increment = 5, CurrentValue = 150, Callback = function(v) Settings.CannonSpeed = v end})
+    CombatTab:CreateSlider({Name = "Projectile Gravity", Range = {0, 500}, Increment = 5, CurrentValue = 196, Callback = function(v) Settings.CannonGravity = v end})
 
     CombatTab:CreateSection("Damage Hacks")
     CombatTab:CreateToggle({Name = "Enable Instakill", CurrentValue = false, Callback = function(v) Settings.Instakill = v end})

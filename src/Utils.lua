@@ -64,7 +64,7 @@ function Utils.GetClosestTarget(Settings, NPCVisuals)
     local cam = workspace.CurrentCamera
 
     -- Check Players
-    if Settings.Aimbot then
+    if Settings.Aimbot or Settings.SilentAim then
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
                 local pos, onScreen = cam:WorldToViewportPoint(player.Character.HumanoidRootPart.Position)
@@ -80,7 +80,7 @@ function Utils.GetClosestTarget(Settings, NPCVisuals)
     end
 
     -- Check NPCs
-    if Settings.NPCAimbot then
+    if Settings.NPCAimbot or Settings.SilentAim then
         for model, _ in pairs(NPCVisuals) do
             if model.Parent and model:FindFirstChild("Humanoid") and model.Humanoid.Health > 0 then
                 local targetPart = model:FindFirstChild("Head") or model:FindFirstChild("Eye") or model:FindFirstChild("HumanoidRootPart")
