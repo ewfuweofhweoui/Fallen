@@ -42,8 +42,15 @@ local Settings = {
     NPCESP = false,
     NPCColor = Color3.fromRGB(255, 165, 0), -- Orange for enemies
     NPCAimbot = false,
-    NPCFilters = {}, -- Table of [Name] = boolean
-    KnownNPCs = { "VikingSkeletonBoss", "SkeletonTutorial", "SkeletonTutorialBoss", "RockMonsterBoss", "Dungeon1Boss", "SkeletonBoss" }, -- Initial list
+    NPCFilters = {
+        ["VikingSkeletonBoss"] = true,
+        ["SkeletonTutorial"] = true,
+        ["SkeletonTutorialBoss"] = true,
+        ["RockMonsterBoss"] = true,
+        ["Dungeon1Boss"] = true,
+        ["SkeletonBoss"] = true
+    },
+    KnownNPCs = { "VikingSkeletonBoss", "SkeletonTutorial", "SkeletonTutorialBoss", "RockMonsterBoss", "Dungeon1Boss", "SkeletonBoss" },
 }
 
 return Settings

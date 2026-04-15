@@ -10,9 +10,11 @@ function Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
     
     local function isShip(model)
         if not model or not model:IsA("Model") then return false end
-        if ShipVisuals[model] or model:FindFirstChild("MainHull") then return true end
-        for name, _ in pairs(SHIP_TYPES) do
-            if model.Name:find(name) then return true end
+        if ShipVisuals[model] or model:FindFirstChild("MainHull") or model:FindFirstChild("Hull") then return true end
+        local name = model.Name:lower()
+        if name:find("ship") or name:find("boat") or name:find("hull") or name:find("sloop") or name:find("brig") then return true end
+        for sName, _ in pairs(SHIP_TYPES) do
+            if name:find(sName:lower()) then return true end
         end
         return false
     end
