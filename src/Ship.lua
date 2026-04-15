@@ -43,15 +43,15 @@ return function(ShipTab, Settings, Utils, ShipVisuals, SHIP_TYPES)
 
     -- Logic Loop
     RunService.RenderStepped:Connect(function()
-        -- Ship Speed
+        -- Ship Speed (Physics-based for vehicles)
         if Settings.ShipSpeed and UserInputService:IsKeyDown(Enum.KeyCode.F) then
             local ship = Utils.GetMyShip(ShipVisuals, SHIP_TYPES)
             if ship then
-                local pivot = ship:GetPivot()
-                local forwardPart = ship:FindFirstChild("MainHull") or ship:FindFirstChild("Hull") or ship.PrimaryPart or ship:FindFirstChildWhichIsA("BasePart")
-                local moveDir = forwardPart and forwardPart.CFrame.LookVector or pivot.LookVector
-                
-                ship:PivotTo(pivot + (moveDir * (Settings.ShipMultiplier * 0.5)))
+                local rootPart = ship.PrimaryPart or ship:FindFirstChild("MainHull") or ship:FindFirstChild("Hull") or ship:FindFirstChildWhichIsA("BasePart")
+                if rootPart then
+                    local moveDir = rootPart.CFrame.LookVector
+                    rootPart.AssemblyLinearVelocity = rootPart.AssemblyLinearVelocity + (moveDir * (Settings.ShipMultiplier * 0.15))
+                end
             end
         end
 
