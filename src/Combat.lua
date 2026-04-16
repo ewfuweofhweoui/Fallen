@@ -5,19 +5,19 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES, CannonAimCircle)
     -- [[ UI Elements ]]
     CombatTab:CreateSection("Targeting & Aimbot")
-    CombatTab:CreateToggle({Name = "Enable Player Aimbot", CurrentValue = false, Callback = function(v) Settings.Aimbot = v end})
-    CombatTab:CreateToggle({Name = "Enable NPC Aimbot", CurrentValue = false, Callback = function(v) Settings.NPCAimbot = v end})
-    CombatTab:CreateSlider({Name = "Aim Smoothing", Range = {1, 10}, Increment = 1, CurrentValue = 1, Callback = function(v) Settings.AimSmoothing = v end})
-    CombatTab:CreateToggle({Name = "Aim Ballistics (Lead/Drop)", CurrentValue = true, Callback = function(v) Settings.AimBallistics = v end})
+    CombatTab:CreateToggle({Name = "Enable Player Aimbot", CurrentValue = false, Description = "Aimbot for players", Callback = function(v) Settings.Aimbot = v end})
+    CombatTab:CreateToggle({Name = "Enable NPC Aimbot", CurrentValue = false, Description = "Aimbot for NPCs", Callback = function(v) Settings.NPCAimbot = v end})
+    CombatTab:CreateSlider({Name = "Aim Smoothing", Range = {1, 10}, Increment = 1, CurrentValue = 1, Description = "How smooth the aimbot follows", Callback = function(v) Settings.AimSmoothing = v end})
+    CombatTab:CreateToggle({Name = "Aim Ballistics (Lead/Drop)", CurrentValue = true, Description = "Predicts movement and accounting for gravity", Callback = function(v) Settings.AimBallistics = v end})
 
     CombatTab:CreateSection("Silent Aim Alternative (Xeno)")
-    CombatTab:CreateToggle({Name = "Enable Hitbox Expander", CurrentValue = false, Callback = function(v) Settings.HitboxExpander = v end})
-    CombatTab:CreateSlider({Name = "Hitbox Size", Range = {2, 15}, Increment = 0.5, CurrentValue = 2, Callback = function(v) Settings.HitboxSize = v end})
+    CombatTab:CreateToggle({Name = "Enable Hitbox Expander", CurrentValue = false, Description = "Expands Hitboxes of players/npcs", Callback = function(v) Settings.HitboxExpander = v end})
+    CombatTab:CreateSlider({Name = "Hitbox Size", Range = {2, 15}, Increment = 0.5, CurrentValue = 2, Description = "How large the hitbox should be", Callback = function(v) Settings.HitboxSize = v end})
 
     CombatTab:CreateSection("Ballistic Settings (Flintlocks & Cannons)")
-    CombatTab:CreateToggle({Name = "Enable Cannon Helper", CurrentValue = false, Callback = function(v) Settings.CannonAim = v end})
-    CombatTab:CreateSlider({Name = "Projectile Speed", Range = {50, 1000}, Increment = 5, CurrentValue = 150, Callback = function(v) Settings.CannonSpeed = v end})
-    CombatTab:CreateSlider({Name = "Projectile Gravity", Range = {0, 500}, Increment = 5, CurrentValue = 196, Callback = function(v) Settings.CannonGravity = v end})
+    CombatTab:CreateToggle({Name = "Enable Cannon Helper", CurrentValue = false, Description = "Shows where to aim for cannons", Callback = function(v) Settings.CannonAim = v end})
+    CombatTab:CreateSlider({Name = "Projectile Speed", Range = {50, 1000}, Increment = 5, CurrentValue = 150, Description = "Speed of the projectile (depends on gun/cannon)", Callback = function(v) Settings.CannonSpeed = v end})
+    CombatTab:CreateSlider({Name = "Projectile Gravity", Range = {0, 500}, Increment = 5, CurrentValue = 196, Description = "Gravity of the projectile (usually 196)", Callback = function(v) Settings.CannonGravity = v end})
 
     -- [[ Logic Loops ]]
 

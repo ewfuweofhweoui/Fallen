@@ -8,7 +8,7 @@ return function(WorldTab, Settings)
     }
 
     WorldTab:CreateSection("Atmosphere")
-    WorldTab:CreateToggle({Name = "Enable Fullbright", CurrentValue = false, Callback = function(v) Settings.Fullbright = v end})
+    WorldTab:CreateToggle({Name = "Enable Fullbright", CurrentValue = false, Description = "Makes the world bright regardless of time", Callback = function(v) Settings.Fullbright = v end})
 
     RunService.Heartbeat:Connect(function()
         if Settings.Fullbright then
