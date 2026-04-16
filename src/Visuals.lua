@@ -75,13 +75,13 @@ return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, S
         if player.Character then 
             -- Reuse logic for current character
             local character = player.Character
-            local highlight = character:FindFirstChild("VoyagerHighlight") or Instance.new("Highlight", character)
-            highlight.Name = "VoyagerHighlight"
+            local highlight = character:FindFirstChild("FallenHighlight") or Instance.new("Highlight", character)
+            highlight.Name = "FallenHighlight"
             Highlights[player] = highlight
             Utils.UpdateHighlight(highlight, Settings)
             
-            local billboard = character:FindFirstChild("VoyagerESP") or Instance.new("BillboardGui", character)
-            billboard.Name = "VoyagerESP"
+            local billboard = character:FindFirstChild("FallenESP") or Instance.new("BillboardGui", character)
+            billboard.Name = "FallenESP"
             billboard.Size = UDim2.new(0, 200, 0, 50)
             billboard.Adornee = character:FindFirstChild("Head") or character.PrimaryPart
             billboard.AlwaysOnTop = true

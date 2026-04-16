@@ -4,23 +4,22 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 
 return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES, CannonAimCircle)
     -- [[ UI Elements ]]
-    CombatTab:CreateSection("Player Targeting")
+    CombatTab:CreateSection("Targeting & Aimbot")
     CombatTab:CreateToggle({Name = "Enable Player Aimbot", CurrentValue = false, Callback = function(v) Settings.Aimbot = v end})
     CombatTab:CreateToggle({Name = "Enable NPC Aimbot", CurrentValue = false, Callback = function(v) Settings.NPCAimbot = v end})
-    CombatTab:CreateToggle({Name = "Enable Silent Aim", CurrentValue = false, Callback = function(v) Settings.SilentAim = v end})
-    CombatTab:CreateToggle({Name = "Silent Ballistics (Lead/Drop)", CurrentValue = true, Callback = function(v) Settings.SilentBallistics = v end})
+    CombatTab:CreateSlider({Name = "Aim Smoothing", Range = {1, 10}, Increment = 1, CurrentValue = 1, Callback = function(v) Settings.AimSmoothing = v end})
+    CombatTab:CreateToggle({Name = "Aim Ballistics (Lead/Drop)", CurrentValue = true, Callback = function(v) Settings.AimBallistics = v end})
+
+    CombatTab:CreateSection("Silent Aim Alternative (Xeno)")
+    CombatTab:CreateToggle({Name = "Enable Hitbox Expander", CurrentValue = false, Callback = function(v) Settings.HitboxExpander = v end})
+    CombatTab:CreateSlider({Name = "Hitbox Size", Range = {2, 15}, Increment = 0.5, CurrentValue = 2, Callback = function(v) Settings.HitboxSize = v end})
 
     CombatTab:CreateSection("Ballistic Settings (Flintlocks & Cannons)")
     CombatTab:CreateToggle({Name = "Enable Cannon Helper", CurrentValue = false, Callback = function(v) Settings.CannonAim = v end})
     CombatTab:CreateSlider({Name = "Projectile Speed", Range = {50, 1000}, Increment = 5, CurrentValue = 150, Callback = function(v) Settings.CannonSpeed = v end})
     CombatTab:CreateSlider({Name = "Projectile Gravity", Range = {0, 500}, Increment = 5, CurrentValue = 196, Callback = function(v) Settings.CannonGravity = v end})
 
-    CombatTab:CreateSection("Damage Hacks")
-    CombatTab:CreateToggle({Name = "Enable Instakill", CurrentValue = false, Callback = function(v) Settings.Instakill = v end})
-    CombatTab:CreateSlider({Name = "Damage Multiplier", Range = {1, 50}, Increment = 1, CurrentValue = 1, Callback = function(v) Settings.DamageMultiplier = v end})
-    
     -- [[ Logic Loops ]]
-    local LastCombatRemote = nil
 
     -- Aimbot Loop
     RunService.RenderStepped:Connect(function()
@@ -28,9 +27,28 @@ return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES,
             local targetPart = Utils.GetClosestTarget(Settings, NPCVisuals)
             if targetPart then
                 local cam = workspace.CurrentCamera
-                local isFirstPerson = (cam.CFrame.Position - cam.Focus.Position).Magnitude < 0.6
-                if isFirstPerson then
-                    cam.CFrame = CFrame.new(cam.CFrame.Position, targetPart.Position)
+                local aimPos = targetPart.Position
+
+                -- Apply Ballistics
+                if Settings.AimBallistics then
+                    local origin = cam.CFrame.Position
+                    local targetVel = targetPart.AssemblyLinearVelocity or Vector3.new(0, 0, 0)
+                    local dist = (aimPos - origin).Magnitude
+                    local timeToHit = dist / Settings.CannonSpeed
+                    
+                    local leadPos = aimPos + (targetVel * timeToHit)
+                    local dropOffset = 0.5 * Settings.CannonGravity * (timeToHit ^ 2)
+                    aimPos = leadPos + Vector3.new(0, dropOffset, 0)
+                end
+
+                -- Aimbot Logic: Snaps only on Mouse1, with smoothing
+                if UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+                    local lookCF = CFrame.new(cam.CFrame.Position, aimPos)
+                    if Settings.AimSmoothing > 1 then
+                        cam.CFrame = cam.CFrame:Lerp(lookCF, 1 / Settings.AimSmoothing)
+                    else
+                        cam.CFrame = lookCF
+                    end
                 end
             end
         end
@@ -68,63 +86,67 @@ return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES,
         else CannonAimCircle.Visible = false end
     end)
 
-    -- Instakill Heartbeat
+    -- Core Loops
     RunService.Heartbeat:Connect(function()
-        if Settings.Instakill and _G.LastCombatRemote and UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-            for i = 1, math.floor(Settings.DamageMultiplier * 5) do
-                pcall(function() _G.LastCombatRemote:FireServer() end)
+        -- [[ Hitbox Expander Logic ]]
+        if Settings.HitboxExpander then
+            local size = Vector3.new(Settings.HitboxSize, Settings.HitboxSize, Settings.HitboxSize)
+            -- Players
+            for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+                if player ~= LocalPlayer and player.Character then
+                    local root = player.Character:FindFirstChild("HumanoidRootPart")
+                    if root then
+                        root.Size = size
+                        root.Transparency = 0.7
+                        root.BrickColor = BrickColor.new("Really blue")
+                        root.Material = Enum.Material.Neon
+                        root.CanCollide = false
+                    end
+                end
+            end
+            -- NPCs
+            for model, _ in pairs(NPCVisuals) do
+                if model.Parent then
+                    local root = model:FindFirstChild("HumanoidRootPart")
+                    if root then
+                        root.Size = size
+                        root.Transparency = 0.7
+                        root.BrickColor = BrickColor.new("Really blue")
+                        root.Material = Enum.Material.Neon
+                        root.CanCollide = false
+                    end
+                end
+            end
+        else
+            -- Cleanup Players
+            for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+                if player ~= LocalPlayer and player.Character then
+                    local root = player.Character:FindFirstChild("HumanoidRootPart")
+                    if root and root.Transparency ~= 1 then
+                        root.Size = Vector3.new(2, 2, 1)
+                        root.Transparency = 1
+                        root.BrickColor = BrickColor.new("Medium stone grey")
+                        root.Material = Enum.Material.Plastic
+                        root.CanCollide = false
+                    end
+                end
+            end
+            -- Cleanup NPCs
+            for model, _ in pairs(NPCVisuals) do
+                if model.Parent then
+                    local root = model:FindFirstChild("HumanoidRootPart")
+                    if root and root.Transparency ~= 1 then
+                        root.Size = Vector3.new(2, 2, 1)
+                        root.Transparency = 1
+                        root.BrickColor = BrickColor.new("Medium stone grey")
+                        root.Material = Enum.Material.Plastic
+                        root.CanCollide = false
+                    end
+                end
             end
         end
     end)
 
-    -- Metatable Hook for Silent Aim and Remote Discovery
-    local canHook = (getrawmetatable and setreadonly and newcclosure)
-    if canHook then
-        local mt = getrawmetatable(game)
-        local oldNamecall = mt.__namecall
-        setreadonly(mt, false)
-        
-        mt.__namecall = newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            local args = {...}
-
-            -- Remote Discovery (for Instakill)
-            if method == "FireServer" and (tostring(self):lower():find("hit") or tostring(self):lower():find("damage") or tostring(self):lower():find("combat")) then
-                _G.LastCombatRemote = self
-            end
-
-            -- Silent Aim Logic (Raycast Redirection with Ballistics)
-            if Settings.SilentAim and not checkcaller() then
-                local targetPart = Utils.GetClosestTarget(Settings, NPCVisuals)
-                if targetPart then
-                    local aimPos = targetPart.Position
-                    
-                    if Settings.SilentBallistics then
-                        local origin = (method == "Raycast" and args[1]) or (method:find("Ray") and args[1] and args[1].Origin) or workspace.CurrentCamera.CFrame.Position
-                        local targetVel = targetPart.AssemblyLinearVelocity or Vector3.new(0, 0, 0)
-                        local dist = (aimPos - origin).Magnitude
-                        local timeToHit = dist / Settings.CannonSpeed
-                        
-                        -- Lead and Drop Compensation (No Spread included by overwriting direction)
-                        local leadPos = aimPos + (targetVel * timeToHit)
-                        local dropOffset = 0.5 * Settings.CannonGravity * (timeToHit ^ 2)
-                        aimPos = leadPos + Vector3.new(0, dropOffset, 0)
-                    end
-
-                    if method == "Raycast" then
-                        local origin, direction = args[1], args[2]
-                        local redirectedDirection = (aimPos - origin).Unit * direction.Magnitude
-                        return oldNamecall(self, origin, redirectedDirection, select(3, ...))
-                    elseif method:find("FindPartOnRay") then
-                        local oldRay = args[1]
-                        local redirectedRay = Ray.new(oldRay.Origin, (aimPos - oldRay.Origin).Unit * oldRay.Direction.Magnitude)
-                        return oldNamecall(self, redirectedRay, select(2, ...))
-                    end
-                end
-            end
-
-            return oldNamecall(self, ...)
-        end)
-        setreadonly(mt, true)
-    end
+    -- Note: Removed hook-based Silent Aim as Xeno doesn't support metatable/function hooks reliably.
+    -- Magnetic Aim (Camera Snapping) implemented in RenderStepped loop above.
 end

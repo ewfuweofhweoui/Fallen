@@ -38,26 +38,4 @@ return function(MovementTab, Settings, Utils)
             hrp.Velocity = Vector3.new(0, 0, 0)
         end
     end)
-
-    -- Click TP
-    UserInputService.InputBegan:Connect(function(input, gpe)
-        if gpe then return end
-        if Settings.ClickTP and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) and input.UserInputType == Enum.UserInputType.MouseButton1 then
-            local mousePos = LocalPlayer:GetMouse().Hit
-            if mousePos and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                local hrp = LocalPlayer.Character.HumanoidRootPart
-                local targetPos = mousePos.Position + Vector3.new(0, 3, 0)
-                local distance = (targetPos - hrp.Position).Magnitude
-                
-                if distance > 1 then
-                    local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                    if hum then hum.PlatformStand = true end
-                    local tween = TweenService:Create(hrp, TweenInfo.new(distance / Settings.TPSpeed, Enum.EasingStyle.Linear), {CFrame = CFrame.new(targetPos)})
-                    tween:Play()
-                    tween.Completed:Wait()
-                    if hum then hum.PlatformStand = false end
-                end
-            end
-        end
-    end)
 end

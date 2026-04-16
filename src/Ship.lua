@@ -52,12 +52,12 @@ return function(ShipTab, Settings, Utils, ShipVisuals, SHIP_TYPES)
                 local moveDir = movePart and movePart.CFrame.LookVector or pivot.LookVector
                 
                 -- [[ Diagnostic ]]
-                warn("Voyager: Boosting ship " .. ship.Name .. " at multiplier " .. tostring(Settings.ShipMultiplier))
+                -- warn("Fallen: Boosting ship " .. ship.Name .. " at multiplier " .. tostring(Settings.ShipMultiplier))
                 
                 ship:PivotTo(pivot + (moveDir * (Settings.ShipMultiplier * 0.5)))
             else
                 -- [[ Diagnostic ]]
-                warn("Voyager: Ship Speed active but no ship found under player.")
+                -- warn("Fallen: Ship Speed active but no ship found under player.")
             end
         end
 

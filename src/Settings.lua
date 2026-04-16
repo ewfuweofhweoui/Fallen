@@ -17,12 +17,13 @@ local Settings = {
     CFrameMultiplier = 1,
     StealthFly = false,
     FlySpeed = 50,
-    TPSpeed = 50,
     -- Combat Settings
     Fullbright = false,
     Aimbot = false,
-    SilentAim = false,
-    SilentBallistics = true,
+    AimSmoothing = 1,
+    AimBallistics = true,
+    HitboxExpander = false,
+    HitboxSize = 2,
     CannonAim = false,
     CannonSpeed = 150,
     CannonGravity = 196,
@@ -36,10 +37,6 @@ local Settings = {
     Crosshair = false,
     CrosshairSize = 10,
     CrosshairColor = Color3.fromRGB(0, 255, 0),
-    CombatTarget = nil,
-    -- Damage Mods
-    Instakill = false,
-    DamageMultiplier = 1,
     -- NPC Visuals
     NPCESP = false,
     NPCColor = Color3.fromRGB(255, 165, 0), -- Orange for enemies

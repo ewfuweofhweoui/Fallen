@@ -150,8 +150,18 @@ function FallenUI:CreateWindow(options)
         NavList = navList,
         Pages = pages,
         Tabs = {},
-        CurrentTab = nil
+        CurrentTab = nil,
+        Visible = true
     }
+
+    -- [[ Toggle Key Handler ]]
+    UserInputService.InputBegan:Connect(function(input, gpe)
+        if gpe then return end
+        if input.KeyCode == (options.ToggleKey or Enum.KeyCode.RightControl) then
+            window.Visible = not window.Visible
+            main.Visible = window.Visible
+        end
+    end)
 
     function window:CreateTab(name)
         local page = Create("ScrollingFrame", {
@@ -272,7 +282,7 @@ function FallenUI:CreateWindow(options)
         function tab:CreateSlider(opts)
             local val = opts.CurrentValue or opts.Range[1]
             local sliderFrame = Create("Frame", {
-                Size = UDim2.new(0, 380, 0, 45),
+                Size = UDim2.new(0, 380, 0, 50),
                 BackgroundColor3 = Theme.Item,
                 BorderSizePixel = 0
             }, page)
@@ -288,8 +298,8 @@ function FallenUI:CreateWindow(options)
             }, sliderFrame)
 
             local tray = Create("Frame", {
-                Size = UDim2.new(1, -20, 0, 4),
-                Position = UDim2.new(0, 10, 0, 30),
+                Size = UDim2.new(1, -30, 0, 6),
+                Position = UDim2.new(0, 15, 0, 35),
                 BackgroundColor3 = Theme.Section,
                 BorderSizePixel = 0
             }, sliderFrame)
@@ -300,23 +310,38 @@ function FallenUI:CreateWindow(options)
                 BorderSizePixel = 0
             }, tray)
 
+            local knob = Create("Frame", {
+                Size = UDim2.new(0, 12, 0, 12),
+                Position = UDim2.new((val - opts.Range[1]) / (opts.Range[2] - opts.Range[1]), -6, 0.5, -6),
+                BackgroundColor3 = Theme.Text,
+                BorderSizePixel = 0,
+                ZIndex = 2
+            }, tray)
+            Create("UICorner", {CornerRadius = UDim.new(1, 0)}, knob)
+
             local dragging = false
             local function update()
-                local mousePos = UserInputService:GetMouseLocation().X
+                local mouseLocation = UserInputService:GetMouseLocation()
                 local trayPos = tray.AbsolutePosition.X
                 local traySize = tray.AbsoluteSize.X
-                local perc = math.clamp((mousePos - trayPos) / traySize, 0, 1)
-                val = math.floor(opts.Range[1] + (opts.Range[2] - opts.Range[1]) * perc)
+                local perc = math.clamp((mouseLocation.X - trayPos) / traySize, 0, 1)
+                
+                local rawVal = opts.Range[1] + (opts.Range[2] - opts.Range[1]) * perc
                 if opts.Increment then
-                    val = math.floor(val / opts.Increment + 0.5) * opts.Increment
-                    perc = (val - opts.Range[1]) / (opts.Range[2] - opts.Range[1])
+                    val = math.floor(rawVal / opts.Increment + 0.5) * opts.Increment
+                else
+                    val = math.floor(rawVal)
                 end
-                fill.Size = UDim2.new(perc, 0, 1, 0)
+                val = math.clamp(val, opts.Range[1], opts.Range[2])
+                
+                local finalPerc = (val - opts.Range[1]) / (opts.Range[2] - opts.Range[1])
+                fill.Size = UDim2.new(finalPerc, 0, 1, 0)
+                knob.Position = UDim2.new(finalPerc, -6, 0.5, -6)
                 label.Text = opts.Name .. ": " .. tostring(val)
                 opts.Callback(val)
             end
 
-            tray.InputBegan:Connect(function(input)
+            sliderFrame.InputBegan:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true update() end
             end)
             UserInputService.InputEnded:Connect(function(input)
@@ -409,14 +434,13 @@ function FallenUI:CreateWindow(options)
         end
 
         function tab:CreateColorPicker(opts)
-            -- Simplified ColorPicker: Toggles through a few presets or just stays static for now
             local pickerFrame = Create("Frame", {
-                Size = UDim2.new(0, 380, 0, 35),
+                Size = UDim2.new(0, 380, 0, 60),
                 BackgroundColor3 = Theme.Item,
                 BorderSizePixel = 0
             }, page)
             Create("TextLabel", {
-                Size = UDim2.new(1, -50, 1, 0),
+                Size = UDim2.new(1, -60, 0, 30),
                 Position = UDim2.new(0, 10, 0, 0),
                 BackgroundTransparency = 1,
                 Text = opts.Name,
@@ -427,14 +451,61 @@ function FallenUI:CreateWindow(options)
             }, pickerFrame)
 
             local colorBox = Create("Frame", {
-                Size = UDim2.new(0, 20, 0, 20),
-                Position = UDim2.new(1, -30, 0.5, -10),
+                Size = UDim2.new(0, 24, 0, 24),
+                Position = UDim2.new(1, -35, 0, 8),
                 BackgroundColor3 = opts.Color or Color3.new(1, 1, 1),
-                BorderSizePixel = 1,
-                BorderColor3 = Theme.Outline
+                BorderSizePixel = 0
             }, pickerFrame)
 
-            -- Just a notification that color picker is static for now or could implement a small popup
+            local hueSlider = Create("Frame", {
+                Size = UDim2.new(1, -20, 0, 10),
+                Position = UDim2.new(0, 10, 0, 40),
+                BorderSizePixel = 0
+            }, pickerFrame)
+            
+            local uigrad = Create("UIGradient", {
+                Color = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromHSV(0, 1, 1)),
+                    ColorSequenceKeypoint.new(0.2, Color3.fromHSV(0.2, 1, 1)),
+                    ColorSequenceKeypoint.new(0.4, Color3.fromHSV(0.4, 1, 1)),
+                    ColorSequenceKeypoint.new(0.6, Color3.fromHSV(0.6, 1, 1)),
+                    ColorSequenceKeypoint.new(0.8, Color3.fromHSV(0.8, 1, 1)),
+                    ColorSequenceKeypoint.new(1, Color3.fromHSV(1, 1, 1))
+                })
+            }, hueSlider)
+
+            local h, s, v = (opts.Color or Color3.new(1,1,1)):ToHSV()
+            local knob = Create("Frame", {
+                Size = UDim2.new(0, 4, 1, 4),
+                Position = UDim2.new(h, -2, 0, -2),
+                BackgroundColor3 = Color3.new(1, 1, 1),
+                BorderSizePixel = 1,
+                BorderColor3 = Color3.new(0, 0, 0)
+            }, hueSlider)
+
+            local dragging = false
+            local function update()
+                local mouseLocation = UserInputService:GetMouseLocation()
+                local trayPos = hueSlider.AbsolutePosition.X
+                local traySize = hueSlider.AbsoluteSize.X
+                local perc = math.clamp((mouseLocation.X - trayPos) / traySize, 0, 1)
+                
+                knob.Position = UDim2.new(perc, -2, 0, -2)
+                local selectedColor = Color3.fromHSV(perc, 1, 1)
+                colorBox.BackgroundColor3 = selectedColor
+                opts.Callback(selectedColor)
+            end
+
+            hueSlider.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true update() end
+            end)
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+            end)
+            UserInputService.InputChanged:Connect(function(input)
+                if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then update() end
+            end)
+
             page.CanvasSize = UDim2.new(0, 0, 0, page.UIListLayout.AbsoluteContentSize.Y + 20)
         end
 

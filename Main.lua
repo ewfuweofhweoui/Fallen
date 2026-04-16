@@ -16,8 +16,8 @@ local SuperNoop = setmetatable({}, {
 })
 
 local function load(path)
-    if getgenv().VoyagerLocalLoad then
-        local res = getgenv().VoyagerLocalLoad(path)
+    if getgenv().FallenLocalLoad then
+        local res = getgenv().FallenLocalLoad(path)
         return res or SuperNoop
     end
     local success, content = pcall(game.HttpGet, game, BaseURL .. path)
@@ -49,6 +49,7 @@ local SHIP_TYPES = {
     ["SailBoat"] = "Sailboat"
 }
 
+-- [[ Logic Loops ]]
 -- [[ Load Core ]]
 local Settings = load("src/Settings.lua")
 local Utils = load("src/Utils.lua")
