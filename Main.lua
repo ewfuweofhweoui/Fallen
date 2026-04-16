@@ -1,12 +1,12 @@
--- [[ Voyagers | Modular Main ]]
+-- [[ Fallen | Modular Main ]]
 if not game:IsLoaded() then game.Loaded:Wait() end
 task.wait(5) -- Safety delay to ensure NPCs and Ships are spawned
 
 local BaseURL = "https://raw.githubusercontent.com/ewfuweofhweoui/Fallen/main/" 
 
 -- Clear stale test hooks for a clean start
-if getgenv().VoyagerLocalLoad and not _G.VoyagerLocalForce then
-    getgenv().VoyagerLocalLoad = nil
+if getgenv().FallenLocalLoad and not _G.FallenLocalForce then
+    getgenv().FallenLocalLoad = nil
 end
 
 -- Super Noop object: Can be called or indexed infinitely without crashing
@@ -22,17 +22,17 @@ local function load(path)
     end
     local success, content = pcall(game.HttpGet, game, BaseURL .. path)
     if not success or not content or content == "" or content:find("404") then 
-        warn("Voyagers: Missing module -> " .. path) 
+        warn("Fallen: Missing module -> " .. path) 
         return SuperNoop
     end
     local func, err = loadstring(content)
     if not func then
-        warn("Voyagers: Syntax error in " .. path .. " | " .. tostring(err))
+        warn("Fallen: Syntax error in " .. path .. " | " .. tostring(err))
         return SuperNoop
     end
     local status, result = pcall(func)
     if not status then
-        warn("Voyagers: Runtime error in " .. path .. " | " .. tostring(result))
+        warn("Fallen: Runtime error in " .. path .. " | " .. tostring(result))
         return SuperNoop
     end
     return result or SuperNoop
@@ -52,14 +52,14 @@ local SHIP_TYPES = {
 -- [[ Load Core ]]
 local Settings = load("src/Settings.lua")
 local Utils = load("src/Utils.lua")
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local FallenUI = load("src/FallenUI.lua")
 
 -- [[ UI Setup ]]
-local Window = Rayfield:CreateWindow({
-    Name = "Voyagers | Visuals (Modular)",
-    LoadingTitle = "Voyagers Elite",
+local Window = FallenUI:CreateWindow({
+    Name = "Fallen | Visuals",
+    LoadingTitle = "Fallen Elite",
     LoadingSubtitle = "by Antigravity",
-    ConfigurationSaving = { Enabled = true, FolderName = "Voyagers", FileName = "ModularConfig" },
+    ConfigurationSaving = { Enabled = true, FolderName = "Fallen", FileName = "ModularConfig" },
     KeySystem = false,
 })
 
@@ -109,5 +109,5 @@ load("src/Movement.lua")(MovementTab, Settings, Utils)
 load("src/World.lua")(WorldTab, Settings)
 load("src/Ship.lua")(ShipTab, Settings, Utils, ShipVisuals, SHIP_TYPES)
 
-Rayfield:LoadConfiguration()
-print("Voyagers: Modular Version Initialized.")
+Window:LoadConfiguration()
+print("Fallen: Modular Version Initialized.")

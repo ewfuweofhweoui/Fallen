@@ -52,12 +52,12 @@ return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, S
         if player == LocalPlayer then return end
         player.CharacterAdded:Connect(function(character)
             local highlight = Instance.new("Highlight", character)
-            highlight.Name = "VoyagerHighlight"
+            highlight.Name = "FallenHighlight"
             Highlights[player] = highlight
             Utils.UpdateHighlight(highlight, Settings)
             
             local billboard = Instance.new("BillboardGui", character)
-            billboard.Name = "VoyagerESP"
+            billboard.Name = "FallenESP"
             billboard.Size = UDim2.new(0, 200, 0, 50)
             billboard.Adornee = character:WaitForChild("Head", 5) or character.PrimaryPart
             billboard.AlwaysOnTop = true
@@ -109,7 +109,7 @@ return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, S
         end
 
         local billboard = Instance.new("BillboardGui", model)
-        billboard.Name = "VoyagerNPCESP"
+        billboard.Name = "FallenNPCESP"
         billboard.Size = UDim2.new(0, 200, 0, 50)
         billboard.AlwaysOnTop = true
         billboard.StudsOffset = Vector3.new(0, 3, 0)

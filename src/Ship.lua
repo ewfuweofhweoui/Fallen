@@ -22,7 +22,7 @@ return function(ShipTab, Settings, Utils, ShipVisuals, SHIP_TYPES)
         if not targetPart then return end
         
         local billboard = Instance.new("BillboardGui", model)
-        billboard.Name = "VoyagerShipESP"
+        billboard.Name = "FallenShipESP"
         billboard.Size = UDim2.new(0, 200, 0, 50)
         billboard.AlwaysOnTop = true
         billboard.StudsOffset = Vector3.new(0, 15, 0)
