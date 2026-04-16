@@ -86,34 +86,32 @@ return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES,
         else CannonAimCircle.Visible = false end
     end)
 
-    -- Core Loops
-    RunService.Heartbeat:Connect(function()
         -- [[ Hitbox Expander Logic ]]
         if Settings.HitboxExpander then
             local size = Vector3.new(Settings.HitboxSize, Settings.HitboxSize, Settings.HitboxSize)
             -- Players
             for _, player in pairs(game:GetService("Players"):GetPlayers()) do
                 if player ~= LocalPlayer and player.Character then
-                    local root = player.Character:FindFirstChild("HumanoidRootPart")
-                    if root then
-                        root.Size = size
-                        root.Transparency = 0.7
-                        root.BrickColor = BrickColor.new("Really blue")
-                        root.Material = Enum.Material.Neon
-                        root.CanCollide = false
+                    local head = player.Character:FindFirstChild("Head")
+                    if head then
+                        head.Size = size
+                        head.Transparency = 0.7
+                        head.BrickColor = BrickColor.new("Really blue")
+                        head.Material = Enum.Material.Neon
+                        head.CanCollide = false
                     end
                 end
             end
             -- NPCs
             for model, _ in pairs(NPCVisuals) do
                 if model.Parent then
-                    local root = model:FindFirstChild("HumanoidRootPart")
-                    if root then
-                        root.Size = size
-                        root.Transparency = 0.7
-                        root.BrickColor = BrickColor.new("Really blue")
-                        root.Material = Enum.Material.Neon
-                        root.CanCollide = false
+                    local head = model:FindFirstChild("Head") or model:FindFirstChild("HumanoidRootPart")
+                    if head then
+                        head.Size = size
+                        head.Transparency = 0.7
+                        head.BrickColor = BrickColor.new("Really blue")
+                        head.Material = Enum.Material.Neon
+                        head.CanCollide = false
                     end
                 end
             end
@@ -121,30 +119,33 @@ return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES,
             -- Cleanup Players
             for _, player in pairs(game:GetService("Players"):GetPlayers()) do
                 if player ~= LocalPlayer and player.Character then
-                    local root = player.Character:FindFirstChild("HumanoidRootPart")
-                    if root and root.Transparency ~= 1 then
-                        root.Size = Vector3.new(2, 2, 1)
-                        root.Transparency = 1
-                        root.BrickColor = BrickColor.new("Medium stone grey")
-                        root.Material = Enum.Material.Plastic
-                        root.CanCollide = false
+                    local head = player.Character:FindFirstChild("Head")
+                    if head and head.Transparency ~= 0 then -- Standard head isn't transparent
+                        head.Size = Vector3.new(2, 1, 1) -- Standard R15 head approx
+                        head.Transparency = 0
+                        head.BrickColor = player.Character:FindFirstChild("Head") and player.Character.Head.BrickColor or BrickColor.new("Pasteel brown")
+                        head.Material = Enum.Material.Plastic
+                        head.CanCollide = true
                     end
                 end
             end
             -- Cleanup NPCs
             for model, _ in pairs(NPCVisuals) do
                 if model.Parent then
-                    local root = model:FindFirstChild("HumanoidRootPart")
-                    if root and root.Transparency ~= 1 then
-                        root.Size = Vector3.new(2, 2, 1)
-                        root.Transparency = 1
-                        root.BrickColor = BrickColor.new("Medium stone grey")
-                        root.Material = Enum.Material.Plastic
-                        root.CanCollide = false
+                    local head = model:FindFirstChild("Head") or model:FindFirstChild("HumanoidRootPart")
+                    if head and head.Transparency ~= 0 then
+                        head.Size = Vector3.new(2, 1, 1)
+                        head.Transparency = 0
+                        head.Material = Enum.Material.Plastic
+                        head.CanCollide = true
                     end
                 end
             end
         end
+    end)
+
+    -- Core Loops
+    RunService.Heartbeat:Connect(function()
     end)
 
     -- Note: Removed hook-based Silent Aim as Xeno doesn't support metatable/function hooks reliably.
