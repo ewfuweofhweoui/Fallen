@@ -53,13 +53,13 @@ local SHIP_TYPES = {
 -- [[ Load Core ]]
 local Settings = load("src/Settings.lua")
 local Utils = load("src/Utils.lua")
-local Luna = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Luna-Interface-Suite/refs/heads/master/source.lua"))()
+local Luna = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Luna-Interface-Suite/refs/heads/master/source.lua", true))()
 
 -- [[ UI Setup ]]
 local Window = Luna:CreateWindow({
     Name = "Fallen | Visuals",
     Subtitle = "by Antigravity",
-    LogoID = "11384025064", -- Fallen Logo Placeholder
+    LogoID = "11384025064",
     LoadingEnabled = true,
     LoadingTitle = "Fallen Elite",
     LoadingSubtitle = "by Antigravity",
@@ -71,7 +71,7 @@ local Window = Luna:CreateWindow({
     KeySettings = {
         Title = "Fallen Elite | Authentication",
         Subtitle = "Key System",
-        Note = "Please enter your key to continue.",
+        Note = "Enter your key to continue.",
         SaveKey = true,
         Key = {"9XK2-7BQM-4LRT-8ZWP"},
         SecondAction = {
@@ -83,16 +83,16 @@ local Window = Luna:CreateWindow({
 })
 
 -- [[ Initialize Tabs ]]
-local CombatTab = Window:CreateTab({Name = "Combat", Icon = "gavel", ImageSource = "Material"})
-local VisualsTab = Window:CreateTab({Name = "Visuals", Icon = "visibility", ImageSource = "Material"})
-local MovementTab = Window:CreateTab({Name = "Movement", Icon = "directions_run", ImageSource = "Material"})
-local WorldTab = Window:CreateTab({Name = "World", Icon = "public", ImageSource = "Material"})
-local ShipTab = Window:CreateTab({Name = "Ship", Icon = "anchor", ImageSource = "Material"})
+local CombatTab = Window:CreateTab({Name = "Combat", Icon = "gavel", ImageSource = "Material", ShowTitle = true})
+local VisualsTab = Window:CreateTab({Name = "Visuals", Icon = "visibility", ImageSource = "Material", ShowTitle = true})
+local MovementTab = Window:CreateTab({Name = "Movement", Icon = "directions_run", ImageSource = "Material", ShowTitle = true})
+local WorldTab = Window:CreateTab({Name = "World", Icon = "public", ImageSource = "Material", ShowTitle = true})
+local ShipTab = Window:CreateTab({Name = "Ship", Icon = "anchor", ImageSource = "Material", ShowTitle = true})
 
 -- [[ Home Tab ]]
 Window:CreateHomeTab({
     Icon = 1,
-    SupportedExecutors = {"Xeno", "Vega X", "Delta", "Nihon"},
+    SupportedExecutors = {"Xeno", "Vega X", "Delta", "Nihon", "Fluxus", "Hydrogen"},
     DiscordInvite = "dkFrq5g9"
 })
 

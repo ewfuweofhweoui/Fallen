@@ -7,8 +7,8 @@ return function(WorldTab, Settings)
         Brightness = Lighting.Brightness,
     }
 
-    local AtmSec = WorldTab:CreateSection("Atmosphere")
-    AtmSec:CreateToggle({Name = "Enable Fullbright", CurrentValue = false, Description = "Makes the world bright regardless of time", Callback = function(v) Settings.Fullbright = v end})
+    WorldTab:CreateSection("Atmosphere")
+    WorldTab:CreateToggle({Name = "Enable Fullbright", CurrentValue = false, Description = "Makes the world bright regardless of time", Callback = function(v) Settings.Fullbright = v end}, "Fullbright")
 
     RunService.Heartbeat:Connect(function()
         if Settings.Fullbright then

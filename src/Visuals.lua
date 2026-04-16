@@ -4,41 +4,41 @@ local LocalPlayer = Players.LocalPlayer
 
 return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, SHIP_TYPES, Highlights, FOVCircle, CrosshairLines)
     -- [[ UI Elements ]]
-    local TargetSec = VisualsTab:CreateSection("Targeting Visuals")
-    TargetSec:CreateToggle({Name = "Show FOV Circle", CurrentValue = false, Description = "Visualizes the aimbot FOV", Callback = function(v) Settings.ShowFOV = v end})
-    TargetSec:CreateSlider({Name = "FOV Radius", Range = {20, 600}, Increment = 1, CurrentValue = 100, Description = "Radius of the FOV circle", Callback = function(v) Settings.FOVSize = v end})
-    TargetSec:CreateColorPicker({Name = "FOV Color", Color = Settings.FOVColor, Description = "Color of the FOV circle", Callback = function(v) Settings.FOVColor = v end})
+    VisualsTab:CreateSection("Targeting Visuals")
+    VisualsTab:CreateToggle({Name = "Show FOV Circle", CurrentValue = false, Description = "Visualizes the aimbot FOV", Callback = function(v) Settings.ShowFOV = v end}, "ShowFOV")
+    VisualsTab:CreateSlider({Name = "FOV Radius", Range = {20, 600}, Increment = 1, CurrentValue = 100, Description = "Radius of the FOV circle", Callback = function(v) Settings.FOVSize = v end}, "FOVRadius")
+    VisualsTab:CreateColorPicker({Name = "FOV Color", Color = Settings.FOVColor, Description = "Color of the FOV circle", Callback = function(v) Settings.FOVColor = v end}, "FOVColor")
     
-    local CrosshairSec = VisualsTab:CreateSection("Custom Crosshair")
-    CrosshairSec:CreateToggle({Name = "Enable Crosshair", CurrentValue = false, Description = "Visualizes a custom crosshair", Callback = function(v) Settings.Crosshair = v end})
-    CrosshairSec:CreateSlider({Name = "Crosshair Size", Range = {5, 50}, Increment = 1, CurrentValue = 10, Description = "Size of the crosshair lines", Callback = function(v) Settings.CrosshairSize = v end})
-    CrosshairSec:CreateColorPicker({Name = "Crosshair Color", Color = Settings.CrosshairColor, Description = "Color of the crosshair", Callback = function(v) Settings.CrosshairColor = v end})
+    VisualsTab:CreateSection("Custom Crosshair")
+    VisualsTab:CreateToggle({Name = "Enable Crosshair", CurrentValue = false, Description = "Visualizes a custom crosshair", Callback = function(v) Settings.Crosshair = v end}, "Crosshair")
+    VisualsTab:CreateSlider({Name = "Crosshair Size", Range = {5, 50}, Increment = 1, CurrentValue = 10, Description = "Size of the crosshair lines", Callback = function(v) Settings.CrosshairSize = v end}, "CrosshairSize")
+    VisualsTab:CreateColorPicker({Name = "Crosshair Color", Color = Settings.CrosshairColor, Description = "Color of the crosshair", Callback = function(v) Settings.CrosshairColor = v end}, "CrosshairColor")
 
-    local ChamsSec = VisualsTab:CreateSection("Player Chams")
-    ChamsSec:CreateToggle({Name = "Enable Chams", CurrentValue = false, Description = "Shows player silhouettes through walls", Callback = function(v) Settings.Chams = v for _, h in pairs(Highlights) do Utils.UpdateHighlight(h, Settings) end end})
-    ChamsSec:CreateColorPicker({Name = "Chams Color", Color = Settings.FillColor, Description = "Fill color of the chams", Callback = function(v) Settings.FillColor = v for _, h in pairs(Highlights) do Utils.UpdateHighlight(h, Settings) end end})
+    VisualsTab:CreateSection("Player Chams")
+    VisualsTab:CreateToggle({Name = "Enable Chams", CurrentValue = false, Description = "Shows player silhouettes through walls", Callback = function(v) Settings.Chams = v for _, h in pairs(Highlights) do Utils.UpdateHighlight(h, Settings) end end}, "Chams")
+    VisualsTab:CreateColorPicker({Name = "Chams Color", Color = Settings.FillColor, Description = "Fill color of the chams", Callback = function(v) Settings.FillColor = v for _, h in pairs(Highlights) do Utils.UpdateHighlight(h, Settings) end end}, "ChamsColor")
 
-    local PlayerESPSec = VisualsTab:CreateSection("Player ESP Extras")
-    PlayerESPSec:CreateToggle({Name = "Show Gamertag", CurrentValue = false, Description = "Shows player names above heads", Callback = function(v) Settings.ShowGamertag = v end})
-    PlayerESPSec:CreateToggle({Name = "Show Health", CurrentValue = false, Description = "Shows player health percentage", Callback = function(v) Settings.ShowHealth = v end})
-    PlayerESPSec:CreateToggle({Name = "Show Distance", CurrentValue = false, Description = "Shows how far away players are", Callback = function(v) Settings.ShowDistance = v end})
-    PlayerESPSec:CreateColorPicker({Name = "ESP Text Color", Color = Settings.ESPColor, Description = "Color of the ESP text labels", Callback = function(v) Settings.ESPColor = v end})
+    VisualsTab:CreateSection("Player ESP Extras")
+    VisualsTab:CreateToggle({Name = "Show Gamertag", CurrentValue = false, Description = "Shows player names above heads", Callback = function(v) Settings.ShowGamertag = v end}, "ShowGamertag")
+    VisualsTab:CreateToggle({Name = "Show Health", CurrentValue = false, Description = "Shows player health percentage", Callback = function(v) Settings.ShowHealth = v end}, "ShowHealth")
+    VisualsTab:CreateToggle({Name = "Show Distance", CurrentValue = false, Description = "Shows how far away players are", Callback = function(v) Settings.ShowDistance = v end}, "ShowDistance")
+    VisualsTab:CreateColorPicker({Name = "ESP Text Color", Color = Settings.ESPColor, Description = "Color of the ESP text labels", Callback = function(v) Settings.ESPColor = v end}, "ESPColor")
     
-    local NPCSec = VisualsTab:CreateSection("NPC ESP")
-    NPCSec:CreateToggle({Name = "Enable Global NPC ESP", CurrentValue = false, Description = "Main switch for all NPC ESP", Callback = function(v) Settings.NPCESP = v end})
-    NPCSec:CreateColorPicker({Name = "NPC ESP Color", Color = Settings.NPCColor, Description = "Color of NPC ESP labels", Callback = function(v) Settings.NPCColor = v end})
+    VisualsTab:CreateSection("NPC ESP")
+    VisualsTab:CreateToggle({Name = "Enable Global NPC ESP", CurrentValue = false, Description = "Main switch for all NPC ESP", Callback = function(v) Settings.NPCESP = v end}, "NPCESP")
+    VisualsTab:CreateColorPicker({Name = "NPC ESP Color", Color = Settings.NPCColor, Description = "Color of NPC ESP labels", Callback = function(v) Settings.NPCColor = v end}, "NPCColor")
 
     local SelectedNPC = "None"
-    local NPCDropdown = NPCSec:CreateDropdown({
+    local NPCDropdown = VisualsTab:CreateDropdown({
         Name = "Select NPC Type",
         Options = Settings.KnownNPCs,
         CurrentOption = {"None"},
         MultipleOptions = false,
         Description = "Filters NPC ESP to specific types",
         Callback = function(v) SelectedNPC = v[1] end,
-    })
+    }, "NPCDropdown")
 
-    NPCSec:CreateToggle({
+    VisualsTab:CreateToggle({
         Name = "Show Selected NPC",
         CurrentValue = false,
         Description = "Enables ESP only for the selected NPC type",
@@ -47,7 +47,7 @@ return function(VisualsTab, Settings, Utils, ESPGuis, NPCVisuals, ShipVisuals, S
                 Settings.NPCFilters[SelectedNPC] = v
             end
         end
-    })
+    }, "ShowSelectedNPC")
 
     -- [[ Handlers ]]
     local function ApplyPlayerVisuals(player)
