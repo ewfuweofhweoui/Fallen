@@ -84,8 +84,6 @@ return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES,
                 CannonAimCircle.Visible = true
             else CannonAimCircle.Visible = false end
         else CannonAimCircle.Visible = false end
-    end)
-
         -- [[ Hitbox Expander Logic ]]
         if Settings.HitboxExpander then
             local size = Vector3.new(Settings.HitboxSize, Settings.HitboxSize, Settings.HitboxSize)

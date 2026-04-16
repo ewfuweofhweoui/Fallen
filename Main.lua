@@ -16,26 +16,39 @@ local SuperNoop = setmetatable({}, {
 })
 
 local function load(path)
+    local function notify(title, msg)
+        pcall(function()
+            Window:Notification({
+                Title = title,
+                Content = msg,
+                Duration = 5
+            })
+        end)
+    end
+
     if getgenv().FallenLocalLoad then
         local res = getgenv().FallenLocalLoad(path)
-        return res or SuperNoop
+        return type(res) == "function" and res or SuperNoop
     end
     local success, content = pcall(game.HttpGet, game, BaseURL .. path)
     if not success or not content or content == "" or content:find("404") then 
         warn("Fallen: Missing module -> " .. path) 
+        notify("Module Error", "Missing: " .. path)
         return SuperNoop
     end
     local func, err = loadstring(content)
     if not func then
         warn("Fallen: Syntax error in " .. path .. " | " .. tostring(err))
+        notify("Syntax Error", path .. " failed to parse.")
         return SuperNoop
     end
     local status, result = pcall(func)
     if not status then
         warn("Fallen: Runtime error in " .. path .. " | " .. tostring(result))
+        notify("Runtime Error", path .. " failed to execute.")
         return SuperNoop
     end
-    return result or SuperNoop
+    return type(result) == "function" and result or SuperNoop
 end
 
 -- [[ Shared Data ]]
