@@ -66,48 +66,20 @@ local SHIP_TYPES = {
 -- [[ Load Core ]]
 local Settings = load("src/Settings.lua")
 local Utils = load("src/Utils.lua")
-local Luna = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nebula-Softworks/Luna-Interface-Suite/refs/heads/master/source.lua", true))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/UI-Libraries/main/Cerberus/source.lua"))()
+
 
 -- [[ UI Setup ]]
-local Window = Luna:CreateWindow({
-    Name = "Fallen | Visuals",
-    Subtitle = "by Antigravity",
-    LogoID = "11384025064",
-    LoadingEnabled = true,
-    LoadingTitle = "Fallen Elite",
-    LoadingSubtitle = "by Antigravity",
-    ConfigSettings = {
-        RootFolder = "Fallen",
-        ConfigFolder = "ModularConfig"
-    },
-    KeySystem = true,
-    KeySettings = {
-        Title = "Fallen Elite | Authentication",
-        Subtitle = "Key System",
-        Note = "Enter your key to continue.",
-        SaveKey = true,
-        Key = {"9XK2-7BQM-4LRT-8ZWP"},
-        SecondAction = {
-            Enabled = true,
-            Type = "Discord",
-            Parameter = "dkFrq5g9"
-        }
-    }
-})
+local Window = Library.new("Fallen Elite")
+
 
 -- [[ Initialize Tabs ]]
-local CombatTab = Window:CreateTab({Name = "Combat", Icon = "gavel", ImageSource = "Material", ShowTitle = true})
-local VisualsTab = Window:CreateTab({Name = "Visuals", Icon = "visibility", ImageSource = "Material", ShowTitle = true})
-local MovementTab = Window:CreateTab({Name = "Movement", Icon = "directions_run", ImageSource = "Material", ShowTitle = true})
-local WorldTab = Window:CreateTab({Name = "World", Icon = "public", ImageSource = "Material", ShowTitle = true})
-local ShipTab = Window:CreateTab({Name = "Ship", Icon = "anchor", ImageSource = "Material", ShowTitle = true})
+local CombatTab = Window:Tab("Combat")
+local VisualsTab = Window:Tab("Visuals")
+local MovementTab = Window:Tab("Movement")
+local WorldTab = Window:Tab("World")
+local ShipTab = Window:Tab("Ship")
 
--- [[ Home Tab ]]
-Window:CreateHomeTab({
-    Icon = 1,
-    SupportedExecutors = {"Xeno", "Vega X", "Delta", "Nihon", "Fluxus", "Hydrogen"},
-    DiscordInvite = "dkFrq5g9"
-})
 
 -- [[ Drawing Visuals ]]
 local FOVCircle = Drawing.new("Circle")
@@ -148,5 +120,5 @@ load("src/Movement.lua")(MovementTab, Settings, Utils)
 load("src/World.lua")(WorldTab, Settings)
 load("src/Ship.lua")(ShipTab, Settings, Utils, ShipVisuals, SHIP_TYPES)
 
-Window:LoadConfiguration()
 print("Fallen: Modular Version Initialized.")
+

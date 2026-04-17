@@ -5,11 +5,12 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 
 return function(MovementTab, Settings, Utils)
     -- [[ UI Elements ]]
-    MovementTab:CreateSection("Bypass Movement")
-    MovementTab:CreateToggle({Name = "Enable CFrame Speed", CurrentValue = false, Description = "Boosts your movement speed using CFraming", Callback = function(v) Settings.CFrameSpeed = v end}, "CFrameSpeed")
-    MovementTab:CreateSlider({Name = "Speed Multiplier", Range = {1, 5}, Increment = 0.1, CurrentValue = 1, Description = "Speed multiplier for CFrame speed", Callback = function(v) Settings.CFrameMultiplier = v end}, "CFrameMultiplier")
-    MovementTab:CreateToggle({Name = "Stealth Fly", CurrentValue = false, Description = "Fly stealthily by modifying CFrame", Callback = function(v) Settings.StealthFly = v end}, "StealthFly")
-    MovementTab:CreateSlider({Name = "Fly Speed", Range = {5, 20}, Increment = 1, CurrentValue = 10, Description = "Speed for stealth fly", Callback = function(v) Settings.FlySpeed = v end}, "FlySpeed")
+    local bypassSection = MovementTab:Section("Bypass Movement")
+    bypassSection:Toggle("Enable CFrame Speed", function(v) Settings.CFrameSpeed = v end)
+    bypassSection:Slider("Speed Multiplier", function(v) Settings.CFrameMultiplier = v end, 5, 1)
+    bypassSection:Toggle("Stealth Fly", function(v) Settings.StealthFly = v end)
+    bypassSection:Slider("Fly Speed", function(v) Settings.FlySpeed = v end, 20, 5)
+
 
     -- [[ Logic Loop ]]
     RunService.Heartbeat:Connect(function()

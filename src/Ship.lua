@@ -3,16 +3,17 @@ local UserInputService = game:GetService("UserInputService")
 local CollectionService = game:GetService("CollectionService")
 
 return function(ShipTab, Settings, Utils, ShipVisuals, SHIP_TYPES)
-    ShipTab:CreateSection("Mobility")
-    ShipTab:CreateToggle({Name = "Enable Ship Speed", CurrentValue = false, Description = "Boosts your ship's speed (Hold F)", Callback = function(v) Settings.ShipSpeed = v end}, "ShipSpeed")
-    ShipTab:CreateSlider({Name = "Speed Multiplier", Range = {1, 5}, Increment = 0.1, CurrentValue = 1, Description = "Speed multiplier for ship boost", Callback = function(v) Settings.ShipMultiplier = v end}, "ShipMultiplier")
+    local mobilitySection = ShipTab:Section("Mobility")
+    mobilitySection:Toggle("Enable Ship Speed", function(v) Settings.ShipSpeed = v end)
+    mobilitySection:Slider("Speed Multiplier", function(v) Settings.ShipMultiplier = v end, 5, 1)
     
-    ShipTab:CreateSection("Visuals")
-    ShipTab:CreateToggle({Name = "Show Ship ESP", CurrentValue = false, Description = "Shows ESP for nearby ships", Callback = function(v) 
+    local visualsSection = ShipTab:Section("Visuals")
+    visualsSection:Toggle("Show Ship ESP", function(v) 
         Settings.ShowShipESP = v 
         for _, ship in pairs(ShipVisuals) do ship.label.Visible = v end
-    end}, "ShipESP")
-    ShipTab:CreateColorPicker({Name = "Boat Text Color", Color = Settings.ShipColor, Description = "Color of the ship ESP labels", Callback = function(v) Settings.ShipColor = v end}, "ShipColor")
+    end)
+    visualsSection:ColorWheel("Boat Text Color", function(v) Settings.ShipColor = v end)
+
 
     local function ApplyShipVisuals(model)
         if not model or not model.Parent or ShipVisuals[model] then return end

@@ -4,20 +4,21 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 
 return function(CombatTab, Settings, Utils, NPCVisuals, ShipVisuals, SHIP_TYPES, CannonAimCircle)
     -- [[ UI Elements ]]
-    CombatTab:CreateSection("Targeting & Aimbot")
-    CombatTab:CreateToggle({Name = "Enable Player Aimbot", CurrentValue = false, Description = "Aimbot for players", Callback = function(v) Settings.Aimbot = v end}, "PlayerAimbot")
-    CombatTab:CreateToggle({Name = "Enable NPC Aimbot", CurrentValue = false, Description = "Aimbot for NPCs", Callback = function(v) Settings.NPCAimbot = v end}, "NPCAimbot")
-    CombatTab:CreateSlider({Name = "Aim Smoothing", Range = {1, 10}, Increment = 1, CurrentValue = 1, Description = "How smooth the aimbot follows", Callback = function(v) Settings.AimSmoothing = v end}, "AimSmoothing")
-    CombatTab:CreateToggle({Name = "Aim Ballistics (Lead/Drop)", CurrentValue = true, Description = "Predicts movement and accounting for gravity", Callback = function(v) Settings.AimBallistics = v end}, "AimBallistics")
+    local aimbotSection = CombatTab:Section("Targeting & Aimbot")
+    aimbotSection:Toggle("Enable Player Aimbot", function(v) Settings.Aimbot = v end)
+    aimbotSection:Toggle("Enable NPC Aimbot", function(v) Settings.NPCAimbot = v end)
+    aimbotSection:Slider("Aim Smoothing", function(v) Settings.AimSmoothing = v end, 10, 1)
+    aimbotSection:Toggle("Aim Ballistics (Lead/Drop)", function(v) Settings.AimBallistics = v end)
 
-    CombatTab:CreateSection("Silent Aim Alternative (Xeno)")
-    CombatTab:CreateToggle({Name = "Enable Hitbox Expander", CurrentValue = false, Description = "Expands Hitboxes of players/npcs", Callback = function(v) Settings.HitboxExpander = v end}, "HitboxExpander")
-    CombatTab:CreateSlider({Name = "Hitbox Size", Range = {2, 15}, Increment = 0.5, CurrentValue = 2, Description = "How large the hitbox should be", Callback = function(v) Settings.HitboxSize = v end}, "HitboxSize")
+    local xenoSection = CombatTab:Section("Silent Aim Alternative (Xeno)")
+    xenoSection:Toggle("Enable Hitbox Expander", function(v) Settings.HitboxExpander = v end)
+    xenoSection:Slider("Hitbox Size", function(v) Settings.HitboxSize = v end, 15, 2)
 
-    CombatTab:CreateSection("Ballistic Settings (Flintlocks & Cannons)")
-    CombatTab:CreateToggle({Name = "Enable Cannon Helper", CurrentValue = false, Description = "Shows where to aim for cannons", Callback = function(v) Settings.CannonAim = v end}, "CannonHelper")
-    CombatTab:CreateSlider({Name = "Projectile Speed", Range = {50, 1000}, Increment = 5, CurrentValue = 150, Description = "Speed of the projectile (depends on gun/cannon)", Callback = function(v) Settings.CannonSpeed = v end}, "ProjectileSpeed")
-    CombatTab:CreateSlider({Name = "Projectile Gravity", Range = {0, 500}, Increment = 5, CurrentValue = 196, Description = "Gravity of the projectile (usually 196)", Callback = function(v) Settings.CannonGravity = v end}, "ProjectileGravity")
+    local ballisticSection = CombatTab:Section("Ballistic Settings (Flintlocks & Cannons)")
+    ballisticSection:Toggle("Enable Cannon Helper", function(v) Settings.CannonAim = v end)
+    ballisticSection:Slider("Projectile Speed", function(v) Settings.CannonSpeed = v end, 1000, 50)
+    ballisticSection:Slider("Projectile Gravity", function(v) Settings.CannonGravity = v end, 500, 0)
+
 
     -- [[ Logic Loops ]]
 
