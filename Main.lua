@@ -48,7 +48,8 @@ local function load(path)
         notify("Runtime Error", path .. " failed to execute.")
         return SuperNoop
     end
-    return type(result) == "function" and result or SuperNoop
+    return (type(result) == "function" or type(result) == "table") and result or SuperNoop
+
 end
 
 -- [[ Shared Data ]]
