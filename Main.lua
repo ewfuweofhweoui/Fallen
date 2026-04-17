@@ -66,7 +66,9 @@ local SHIP_TYPES = {
 -- [[ Load Core ]]
 local Settings = load("src/Settings.lua")
 local Utils = load("src/Utils.lua")
+_G.JxereasExistingHooks = { GuiDetectionBypass = true }
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/UI-Libraries/main/Cerberus/source.lua"))()
+
 
 
 -- [[ UI Setup ]]
